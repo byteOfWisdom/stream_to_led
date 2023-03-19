@@ -1,0 +1,44 @@
+.program led_driver
+.side_set 1
+
+.define public TIMESTEP 5
+
+; timings
+; 0 -> high: 0.35us (1)
+; 0 -> low: 1.35us (4)
+; 1 -> high: 1.35us (4)
+; 1 -> low: 0.35us (1)
+
+.wrap_target
+
+bit_loop:
+	;the out instruction holds the wait at the end of the previous byte, or the reset if no previous byte
+	out x, 1 			side 0 [1 - 1] ; side set before wait and optional stall
+	jmp !x short_high 	side 1 [1 - 1] ; this contains the high part of a 0 and half of the high part of a 1
+	jmp bit_loop 		side 1 [4 - 1] ;this holds the other half of a ones high pulse
+
+short_high:
+	nop 				side 0 [4 - 1] ;pulls low, waits for some time, then wraps
+
+.wrap
+
+% c-sdk {
+#include "hardware/clocks.h"
+
+static inline void led_driver_program_init(PIO pio, uint sm, uint offset, uint pin, float freq, bool rgbw) {
+	pio_gpio_init(pio, pin);
+	pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true);
+
+	pio_sm_config c = led_driver_program_get_default_config(offset);
+
+	sm_config_set_sideset_pins(&c, pin);
+	sm_config_set_out_shift(&c, false, true, rgbw ? 32 : 24);
+	sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);
+
+	float div = clock_get_hz(clk_sys) / (freq * led_driver_TIMESTEP);
+	sm_config_set_clkdiv(&c, div);
+
+	pio_sm_init(pio, sm, offset, &c);
+	pio_sm_set_enabled(pio, sm, true);
+}
+%}
