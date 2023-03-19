@@ -1,3 +1,4 @@
 credentials.py
 credentials.h
 build/
+__pycache__/
