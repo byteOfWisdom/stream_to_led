@@ -19,6 +19,7 @@ def ready_conn(board):
     global transmitter
     global addr
     transmitter = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    transmitter.settimeout(0.1)
     addr = (board, 4242)
     return transmitter, addr
 
@@ -51,6 +52,10 @@ def send_frame(frame):
     global transmitter
     msg = encode_scalar_frame(frame)
     transmitter.sendto(msg, addr)
-    reply, _ = transmitter.recvfrom(2)
-    if reply: return True
-    else: return False
+    try:
+        reply, _ = transmitter.recvfrom(2)
+        if reply: return True
+        else: return False
+    except:
+        print("timed out on reply")
+        return False
