@@ -1,7 +1,8 @@
 import curses
 import socket
 
-BLOCK = 'U/2588'
+BLOCK = chr(0x2588) # solid colored unciode block
+
 
 def main():
     stdscr = curses.initscr()
@@ -20,8 +21,11 @@ def main():
                 return True
         except: pass
 
-        #get data
-#        data, _ = sock.recvfrom()
+        try:
+            #get data
+            data, reply = sock.recvfrom(256 * 3)
+            sock.sendto(reply, b'\0xff'.encode())
+        except: pass
 
         #draw data
         stdscr.clear()
@@ -35,7 +39,8 @@ def main():
 def make_socket():
     port = 4242
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.settimeout(0.2)
+    s.settimeout(0.5)
+    s.bind(("127.0.0.1", 4242))
     return s
 
 

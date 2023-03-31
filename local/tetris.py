@@ -27,7 +27,8 @@ drop_count = SPEED
 def main():
     global rot
     global pos
-    frame_sender.ready_conn("PicoW")
+    #frame_sender.ready_conn("PicoW")
+    frame_sender.ready_conn("localhost")
     stdscr = curses.initscr()
     curses.noecho()
     stdscr.keypad(True)
@@ -64,7 +65,7 @@ def xy_to_index(x, y):
 class Piece:
     def __init__(self, kind):
         self.rotation = 0
-        self.color = rgb_to_value(255, 0, 0) # todo make this be different
+        self.color = frame_sender.rgb_to_value(255, 0, 0) # todo make this be different
         self.parts = pieces.base_pieces[kind]
 
 
