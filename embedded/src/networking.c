@@ -14,7 +14,7 @@
 #define PORT 4242
 
 //#define PRINT
-#define REPLY
+//#define REPLY
 
 char temp_storage[BUFF_SIZE];
 u16_t copyd = 0;

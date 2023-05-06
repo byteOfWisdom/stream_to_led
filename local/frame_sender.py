@@ -52,6 +52,7 @@ def send_frame(frame):
     global transmitter
     msg = encode_scalar_frame(frame)
     transmitter.sendto(msg, addr)
+    """
     try:
         reply, _ = transmitter.recvfrom(2)
         if reply: return True
@@ -59,3 +60,4 @@ def send_frame(frame):
     except:
         print("timed out on reply")
         return False
+    """

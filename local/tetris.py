@@ -27,8 +27,8 @@ drop_count = SPEED
 def main():
     global rot
     global pos
-    #frame_sender.ready_conn("PicoW")
-    frame_sender.ready_conn("localhost")
+    frame_sender.ready_conn("PicoW")
+    #frame_sender.ready_conn("localhost")
     stdscr = curses.initscr()
     curses.noecho()
     stdscr.keypad(True)
@@ -216,6 +216,7 @@ def game_tick():
             game.place_active_piece()
     else:
         drop_count -= 1
+
 
     state = game.draw_board()
     frame_sender.send_frame(state)
